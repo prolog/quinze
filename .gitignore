@@ -30,3 +30,8 @@
 *.exe
 *.out
 *.app
+quinze
+
+# Generated files
+Makefile
+quinze.make

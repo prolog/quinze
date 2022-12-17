@@ -19,9 +19,5 @@ project "quinze"
   configuration "Release"
     defines { "NDEBUG" }
     flags { "Optimize" }
-    postbuildcommands { "mkdir quinze",
-                        "cp $(TARGETDIR)/quinze quinze/quinze",
-                        "cp README.md sotw",
-                        "cp LICENSE sotw" }
 
 

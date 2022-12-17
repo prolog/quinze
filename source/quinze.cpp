@@ -3,6 +3,14 @@
 
 #include "quinze.hpp"
 #include "display.hpp"
+#include "settings.hpp"
+
+void print_build_details(const settings& s)
+{
+  std::cout << "Quinze v" << s.version << std::endl;
+  std::cout << "Copyright " << s.copyright_year << ", " << s.author;
+  std::cout << std::endl << std::endl;
+}
 
 int process_input()
 {
@@ -31,11 +39,20 @@ void quinze_loop()
   }  
 }
 
+void farewell()
+{
+  std::cout << "Thanks for playing!" << std::endl;
+}
+
 void quinze()
 {
+  settings set = get_settings();
+  
+  print_build_details(set);
   display_setup();
   quinze_loop();
   display_teardown();
+  farewell();
 }
 
 int main()

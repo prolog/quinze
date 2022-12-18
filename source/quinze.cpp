@@ -25,16 +25,20 @@ int process_input()
   return keep_playing;
 }
 
-void quinze_loop()
+void quinze_loop(settings& set)
 {
   bool keep_playing = true;
 
   while (keep_playing)
   {
-    display_header();
-    display_puzzle();
-    display_footer();
+    refresh_settings(set);
 
+    clear_display();
+    display_header(set);
+    display_puzzle();
+    display_footer(set);
+    refresh_display();
+    
     keep_playing = process_input();
   }  
 }
@@ -50,7 +54,7 @@ void quinze()
   
   print_build_details(set);
   display_setup();
-  quinze_loop();
+  quinze_loop(set);
   display_teardown();
   farewell();
 }

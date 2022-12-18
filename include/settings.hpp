@@ -24,14 +24,16 @@ struct settings
   const std::string version = "0.1";
   const std::string author = "Julian Day <jcd748@mail.usask.ca>";
   const int copyright_year = 2022;
-
+  std::pair<int, int> term_size = std::make_pair(0, 0);
+  
   // Game header
   const std::string header = "Q u i n z E";
   const int header_colour = COLOUR_BOLD_WHITE;
   
   // Game footer
-  const std::string footer = "q quits, arrows/wasd/vi moves, all others switch";
+  const std::string footer = "q quits, arrows/wasd/vi keys move, & all others switch";
   const int footer_colour = COLOUR_BOLD_WHITE;
 };
 
 settings get_settings();
+void refresh_settings(settings& set);

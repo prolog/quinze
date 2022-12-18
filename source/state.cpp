@@ -12,6 +12,7 @@ state create_new_game()
   std::mt19937 g(rd());
   std::vector<int> vals = {-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
   std::shuffle(vals.begin(), vals.end(), g);
+  s.curs = std::make_pair(0, 0);
   
   std::vector<std::vector<int>> new_board(4, std::vector<int>(4));
   new_board = assign(vals);
@@ -23,7 +24,8 @@ state create_new_game()
   }
 
   s.board = new_board;
-
+  s.curs = find_initial_curs(s.board);
+  
   return s;
 }
 
@@ -103,4 +105,34 @@ std::string board_str(const std::vector<std::vector<int>>& board)
   }
 
   return ss.str();
+}
+
+// Figure out where the initial cursor should go.
+std::pair<int, int> find_initial_curs(const std::vector<std::vector<int>>& board)
+{
+  std::pair<int, int> curs = std::make_pair(0, 0);
+
+  for (size_t i = 0; i < board.size(); i++)
+  {
+    std::vector<int> row = board.at(i);
+    
+    for (size_t j = 0; j < row.size(); j++)
+    {
+      int val = row.at(j);
+
+      if (val == -1)
+      {
+	if (j == 0)
+	{
+	  return std::make_pair(i, j+1);
+	}
+	else
+	{
+	  return std::make_pair(i, j-1);
+	}
+      }
+    }	   
+  }
+  
+  return curs;
 }

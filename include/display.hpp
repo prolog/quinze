@@ -9,6 +9,7 @@
 void display_setup();
 void display_teardown();
 void clear_display();
+void init_colours();
 void refresh_display();
 
 // Show the parts of the game screen

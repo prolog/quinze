@@ -1,10 +1,18 @@
 #include "display.hpp"
 
 const int CURSES_NUM_TOTAL_COLOURS = 16;
+const int CURSES_NUM_BASE_COLOURS = 8;
+
+// The total board height when displayed on the screen (includes borders,
+// etc.
+const int DISPLAY_BOARD_HEIGHT = (2 * BOARD_HEIGHT) + 1;
+const int DISPLAY_BOARD_WIDTH = (3 * BOARD_WIDTH) + 1;
 
 void display_setup()
 {
   initscr();
+  start_color();
+  init_colours();
   curs_set(0);
   noecho();
 }
@@ -24,10 +32,27 @@ void refresh_display()
   refresh();
 }
 
+void init_colours()
+{
+  std::vector<short int> colours{COLOR_BLACK, COLOR_RED, COLOR_GREEN, COLOR_YELLOW, COLOR_BLUE, COLOR_MAGENTA, COLOR_CYAN, COLOR_WHITE};
+
+  short int pair_counter = 1;
+  for (auto bg_colour : colours)
+  {
+    for (auto fg_colour : colours)
+    {
+      init_pair(pair_counter, fg_colour, bg_colour);
+      pair_counter++;
+    }
+
+    pair_counter += CURSES_NUM_BASE_COLOURS;
+  }
+}
+
 // Display the top/bottom border on the puzzle.
 void display_border(const int row, const settings& set)
 {
-  int col = set.term_size.second / 2 - (BOARD_WIDTH * 3 + 1);
+  int col = set.term_size.second / 2 - (BOARD_WIDTH * 3 + 1) / 2;
   
   for (int i = 1; i <= BOARD_WIDTH; i++)
   {
@@ -59,8 +84,58 @@ void display_header(const settings& set)
 // Display the current state of the puzzle
 void display_puzzle(const settings& set, const state& st)
 {
-  int top_row = set.term_size.first / 2 - BOARD_HEIGHT / 2;
-  display_border(top_row, set);
+  int row = set.term_size.first / 2 - DISPLAY_BOARD_HEIGHT / 2;
+  int col_start_pos = set.term_size.second / 2 - DISPLAY_BOARD_WIDTH / 2;
+  display_border(row, set);
+
+  const auto& board = st.board;
+
+  for (const auto& row_v : board)
+  {
+    row++;
+    int col = col_start_pos;
+
+    move(row, col);
+    
+    for (size_t i = 0; i < row_v.size(); i++)
+    {
+      set_colour(set.border_row_span_colour);
+      mvprintw(row, col, set.border_row_span.c_str());
+      disable_colour(set.border_row_span_colour);
+      
+      getyx(stdscr, row, col);
+      
+      std::string val = std::to_string(row_v.at(i));
+      set_colour(set.tile_colour);
+
+      if (val == "-1")
+      {
+	val = "  ";
+      }
+      else if (val.size() == 1)
+      {
+	val += " ";
+      }
+
+      mvprintw(row, col, val.c_str());
+      disable_colour(set.tile_colour);
+      getyx(stdscr, row, col);
+      
+      if (i == row_v.size() - 1)
+      {
+	set_colour(set.border_row_span_colour);
+	mvprintw(row, col, set.border_row_span.c_str());
+	disable_colour(set.border_row_span_colour);
+	
+	getyx(stdscr, row, col);
+      }
+    }
+
+    row++;
+
+    display_border(row, set);
+  }
+  
 }
 
 // Display the info footer.

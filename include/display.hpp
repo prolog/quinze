@@ -24,5 +24,5 @@ int get_center_x(const std::string& text);
 std::pair<int, int> get_term_size();
 
 // Colour functions
-void set_colour(const int colour);
-void disable_colour(const int colour);
+void set_colour(const int colour, const bool reverse = false);
+void disable_colour(const int colour, const bool reverse = false);

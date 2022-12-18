@@ -89,24 +89,28 @@ void display_puzzle(const settings& set, const state& st)
   display_border(row, set);
 
   const auto& board = st.board;
-
-  for (const auto& row_v : board)
+  auto curs = st.curs;
+  
+  for (size_t i = 0; i < board.size(); i++)
   {
+    auto row_v = board.at(i);
     row++;
     int col = col_start_pos;
 
     move(row, col);
     
-    for (size_t i = 0; i < row_v.size(); i++)
+    for (size_t j = 0; j < row_v.size(); j++)
     {
       set_colour(set.border_row_span_colour);
       mvprintw(row, col, set.border_row_span.c_str());
       disable_colour(set.border_row_span_colour);
       
       getyx(stdscr, row, col);
-      
-      std::string val = std::to_string(row_v.at(i));
-      set_colour(set.tile_colour);
+
+      std::pair<int, int> cur = {i, j};
+      bool reverse = (curs == cur);
+      std::string val = std::to_string(row_v.at(j));
+      set_colour(set.tile_colour, reverse);
 
       if (val == "-1")
       {
@@ -118,10 +122,10 @@ void display_puzzle(const settings& set, const state& st)
       }
 
       mvprintw(row, col, val.c_str());
-      disable_colour(set.tile_colour);
+      disable_colour(set.tile_colour, reverse);
       getyx(stdscr, row, col);
       
-      if (i == row_v.size() - 1)
+      if (j == row_v.size() - 1)
       {
 	set_colour(set.border_row_span_colour);
 	mvprintw(row, col, set.border_row_span.c_str());
@@ -173,8 +177,13 @@ std::pair<int, int> get_term_size()
 }
 
 // Set or disable the desired colour on the given window.
-void set_colour(const int selected_colour)
+void set_colour(const int selected_colour, const bool reverse)
 {
+  if (reverse)
+  {
+    wattron(stdscr, A_REVERSE);
+  }
+  
   if ((selected_colour % CURSES_NUM_TOTAL_COLOURS) > COLOUR_WHITE)
   {
     int actual_colour = selected_colour - COLOUR_BOLD_BLACK;
@@ -187,8 +196,13 @@ void set_colour(const int selected_colour)
   wattron(stdscr, COLOR_PAIR(selected_colour + 1));
 }
 
-void disable_colour(const int selected_colour)
+void disable_colour(const int selected_colour, const bool reverse)
 {
+  if (reverse)
+  {
+    wattroff(stdscr, A_REVERSE);
+  }
+  
   if ((selected_colour % CURSES_NUM_TOTAL_COLOURS) > COLOUR_WHITE)
   {
     int actual_colour = selected_colour - COLOUR_BOLD_BLACK;

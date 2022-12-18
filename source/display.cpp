@@ -24,21 +24,49 @@ void refresh_display()
   refresh();
 }
 
-// Show the Quinze header
-void display_header(const settings& s)
+// Display the top/bottom border on the puzzle.
+void display_border(const int row, const settings& set)
 {
-  center(s.header, 0, s.header_colour);
+  int col = set.term_size.second / 2 - (BOARD_WIDTH * 3 + 1);
+  
+  for (int i = 1; i <= BOARD_WIDTH; i++)
+  {
+    set_colour(set.border_connector_colour);
+    mvprintw(row, col, set.border_connector.c_str());
+    disable_colour(set.border_connector_colour);
+    col++;
+
+    set_colour(set.border_edge_span_colour);
+    mvprintw(row, col, set.border_edge_span.c_str());
+    disable_colour(set.border_edge_span_colour);
+    col += 2;
+    
+    if (i == BOARD_WIDTH)
+    {
+      set_colour(set.border_connector_colour);
+      mvprintw(row, col, set.border_connector.c_str());
+      disable_colour(set.border_connector_colour);
+    }
+  }
+}
+
+// Show the Quinze header
+void display_header(const settings& set)
+{
+  center(set.header, 0, set.header_colour);
 }
 
 // Display the current state of the puzzle
-void display_puzzle()
+void display_puzzle(const settings& set, const state& st)
 {
+  int top_row = set.term_size.first / 2 - BOARD_HEIGHT / 2;
+  display_border(top_row, set);
 }
 
 // Display the info footer.
-void display_footer(const settings& s)
+void display_footer(const settings& set)
 {
-  center(s.footer, s.term_size.first-1, s.footer_colour);
+  center(set.footer, set.term_size.first-1, set.footer_colour);
 }
 
 // Center the text at the given row.

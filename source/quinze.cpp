@@ -3,7 +3,6 @@
 
 #include "quinze.hpp"
 #include "display.hpp"
-#include "settings.hpp"
 
 void print_build_details(const settings& s)
 {
@@ -25,7 +24,7 @@ int process_input()
   return keep_playing;
 }
 
-void quinze_loop(settings& set)
+void quinze_loop(settings& set, state& st)
 {
   bool keep_playing = true;
 
@@ -35,7 +34,7 @@ void quinze_loop(settings& set)
 
     clear_display();
     display_header(set);
-    display_puzzle();
+    display_puzzle(set, st);
     display_footer(set);
     refresh_display();
     
@@ -51,10 +50,11 @@ void farewell()
 void quinze()
 {
   settings set = get_settings();
+  state st = create_new_game();
   
   print_build_details(set);
   display_setup();
-  quinze_loop(set);
+  quinze_loop(set, st);
   display_teardown();
   farewell();
 }

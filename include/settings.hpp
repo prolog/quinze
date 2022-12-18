@@ -29,6 +29,14 @@ struct settings
   // Game header
   const std::string header = "Q u i n z E";
   const int header_colour = COLOUR_BOLD_WHITE;
+
+  // Border details
+  const std::string border_connector = "+";
+  const std::string border_edge_span = "--";
+  const std::string border_row_span = " |";
+  const int border_connector_colour = COLOUR_BOLD_CYAN;
+  const int border_edge_span_colour = COLOUR_CYAN;
+  const int border_row_span_colour = COLOUR_CYAN;
   
   // Game footer
   const std::string footer = "q quits, arrows/wasd/vi keys move, & all others switch";

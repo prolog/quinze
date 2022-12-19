@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <ncurses.h>
 
@@ -11,17 +12,35 @@ void print_build_details(const settings& s)
   std::cout << std::endl << std::endl;
 }
 
-int process_input()
+bool is_movement(const int input)
 {
-  int keep_playing = true;
+  std::vector<int> movement_vals = get_curs_inputs();
+
+  return (std::find(movement_vals.begin(), movement_vals.end(), input) != movement_vals.end());
+}
+
+void process_movement_input(state& st, const int input)
+{
+  auto curs = get_next_curs(st.curs, input);
+
+  if (curs != st.curs)
+  {
+    st.curs = curs;
+  }
+}
+
+void process_input(state& st, bool& keep_playing)
+{
   int input = getch();
 
   if (input == 'q' || input == 'Q')
   {
     keep_playing = false;
   }
-
-  return keep_playing;
+  else if (is_movement(input))
+  {
+    process_movement_input(st, input);
+  }
 }
 
 void quinze_loop(settings& set, state& st)
@@ -38,7 +57,7 @@ void quinze_loop(settings& set, state& st)
     display_footer(set);
     refresh_display();
     
-    keep_playing = process_input();
+    process_input(st, keep_playing);
   }  
 }
 

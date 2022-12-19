@@ -19,3 +19,5 @@ std::vector<std::vector<int>> assign(const std::vector<int>& vals);
 void board_err(const std::vector<std::vector<int>>& board);
 std::string board_str(const std::vector<std::vector<int>>& board);
 std::pair<int, int> find_initial_curs(const std::vector<std::vector<int>>& board);
+std::vector<int> get_curs_inputs();
+std::pair<int, int> get_next_curs(const std::pair<int, int>& curs, const int key);

@@ -1,8 +1,9 @@
 #include <random>
 #include <algorithm>
-#include "state.hpp"
 #include <iostream>
 #include <sstream>
+#include <ncurses.h>
+#include "state.hpp"
 
 // Create a new game state, shuffling it until it's not in a winner state.
 state create_new_game()
@@ -135,4 +136,43 @@ std::pair<int, int> find_initial_curs(const std::vector<std::vector<int>>& board
   }
   
   return curs;
+}
+
+std::vector<int> get_curs_inputs()
+{
+  return  {'w', 'W', 'a', 'A', 's', 'S', 'd', 'D', KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT};
+}
+
+std::pair<int, int> get_next_curs(const std::pair<int, int>& curs, const int key)
+{
+  std::pair<int, int> next_curs = curs;
+
+  if (key == 'w' || key == 'W' || key == KEY_UP)
+  {
+    next_curs.first--;
+  }
+  else if (key == 'a' || key == 'A' || key == KEY_LEFT)
+  {
+    next_curs.second--;
+  }
+  else if (key == 's' || key == 'S' || key == KEY_DOWN)
+  {
+    next_curs.first++;
+  }
+  else if (key == 'd' || key == 'D' || key == KEY_RIGHT)
+  {
+    next_curs.second++;
+  }
+
+  // If we've moved beyond the bounds of the board, just return the
+  // current cursor.
+  if (next_curs.first < 0 || next_curs.second < 0 || next_curs.first >= BOARD_HEIGHT || next_curs.second >= BOARD_WIDTH)
+  {
+    return curs;
+  }
+  // Otherwise return the new cursor.
+  else
+  {
+    return next_curs;
+  }
 }

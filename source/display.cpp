@@ -13,6 +13,7 @@ void display_setup()
   initscr();
   start_color();
   init_colours();
+  keypad(stdscr, true);
   curs_set(0);
   noecho();
 }

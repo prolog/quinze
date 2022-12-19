@@ -18,7 +18,7 @@ void switch_tiles(state& st)
   
   if (empty(st.board, adj))
   {
-    // TODO: swap(board, st.curs, adj);
+    std::swap(st.board[st.curs.first][st.curs.second], st.board[adj.first][adj.second]);
     st.curs = adj;
   }
   else

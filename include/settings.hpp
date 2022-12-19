@@ -42,7 +42,7 @@ struct settings
   const int tile_colour = COLOUR_BOLD_GREEN;
   
   // Game footer
-  const std::string footer = "q quits, arrows/wasd move, all others switch";
+  const std::string footer = "q quits, arrows/wasd move, and all others switch";
   const int footer_colour = COLOUR_BOLD_WHITE;
 };
 

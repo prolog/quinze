@@ -1,4 +1,5 @@
 #include "display.hpp"
+#include "state.hpp"
 
 const int CURSES_NUM_TOTAL_COLOURS = 16;
 const int CURSES_NUM_BASE_COLOURS = 8;
@@ -110,10 +111,11 @@ void display_puzzle(const settings& set, const state& st)
 
       std::pair<int, int> cur = {i, j};
       bool reverse = (curs == cur);
-      std::string val = std::to_string(row_v.at(j));
+      int ival = row_v.at(j);
+      std::string val = std::to_string(ival);
       set_colour(set.tile_colour, reverse);
-
-      if (val == "-1")
+            
+      if (empty_val(ival))
       {
 	val = "  ";
       }
@@ -147,6 +149,12 @@ void display_puzzle(const settings& set, const state& st)
 void display_footer(const settings& set)
 {
   center(set.footer, set.term_size.first-1, set.footer_colour);
+}
+
+// Flash the current tile to indicate an invalid switch
+void display_invalid_switch(const std::vector<std::vector<int>>&, const std::pair<int, int>& curs)
+{
+  // JCD TODO
 }
 
 // Center the text at the given row.

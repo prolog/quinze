@@ -3,6 +3,7 @@
 #include "state.hpp"
 
 void print_build_details(const settings& set);
+void switch_tiles(state& st);
 bool is_movement(const int input);
 void process_movement_input(state& st, const int input);
 void process_input(state& st, bool& keep_playing);

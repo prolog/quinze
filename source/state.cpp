@@ -176,3 +176,74 @@ std::pair<int, int> get_next_curs(const std::pair<int, int>& curs, const int key
     return next_curs;
   }
 }
+
+std::vector<std::pair<int, int>> get_all_adjacent(const std::vector<std::vector<int>>&, const std::pair<int, int>& curs)
+{
+  std::vector<std::pair<int, int>> adj;
+
+  // N
+  if (curs.first > 0)
+  {
+    adj.push_back({curs.first-1, curs.second});
+  }
+
+  // S
+  if (curs.first < BOARD_HEIGHT - 1)
+  {
+    adj.push_back({curs.first+1, curs.second});
+  }
+
+  // E
+  if (curs.second < BOARD_WIDTH - 1)
+  {
+    adj.push_back({curs.first, curs.second+1});
+  }
+
+  // W
+  if (curs.second > 0)
+  {
+    adj.push_back({curs.first, curs.second-1});
+  }
+
+  return adj;
+}
+
+bool empty_val(const int val)
+{
+  return val == -1;
+}
+
+bool empty(const std::vector<std::vector<int>>& board, const std::pair<int, int>& coord)
+{
+  bool e = false;
+
+  try
+  {
+    std::vector<int> row = board.at(coord.first);
+    int val = row.at(coord.second);
+
+    return empty_val(val);
+  }
+  catch(...)
+  {
+  }
+
+  return e;
+}
+
+std::pair<int, int> get_empty_adjacent(const std::vector<std::vector<int>>& board, const std::pair<int, int>& pos)
+{
+  std::pair<int, int> adj = {-1, -1};
+  auto adj_maybe = get_all_adjacent(board, pos);
+
+  for (const auto& maybe : adj_maybe)
+  {
+    if (empty(board, maybe))
+    {
+      return maybe;
+    }
+  }
+  
+  return adj;
+}
+

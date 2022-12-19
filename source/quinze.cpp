@@ -12,6 +12,21 @@ void print_build_details(const settings& s)
   std::cout << std::endl << std::endl;
 }
 
+void switch_tiles(state& st)
+{
+  auto adj = get_empty_adjacent(st.board, st.curs);
+  
+  if (empty(st.board, adj))
+  {
+    // TODO: swap(board, st.curs, adj);
+    st.curs = adj;
+  }
+  else
+  {
+    display_invalid_switch(st.board, st.curs);
+  }
+}
+
 bool is_movement(const int input)
 {
   std::vector<int> movement_vals = get_curs_inputs();
@@ -40,6 +55,10 @@ void process_input(state& st, bool& keep_playing)
   else if (is_movement(input))
   {
     process_movement_input(st, input);
+  }
+  else
+  {
+    switch_tiles(st);
   }
 }
 

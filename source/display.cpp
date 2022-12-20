@@ -1,3 +1,5 @@
+#include <iomanip>
+#include <sstream>
 #include "display.hpp"
 #include "state.hpp"
 
@@ -109,7 +111,7 @@ void display_puzzle(const settings& set, const state& st)
       
       getyx(stdscr, row, col);
 
-      std::pair<int, int> cur = {i, j};
+      coord cur = {i, j};
       bool reverse = (curs == cur);
       int ival = row_v.at(j);
       std::string val = std::to_string(ival);
@@ -152,9 +154,43 @@ void display_footer(const settings& set)
 }
 
 // Flash the current tile to indicate an invalid switch
-void display_invalid_switch(const std::vector<std::vector<int>>&, const std::pair<int, int>& curs)
+void display_invalid_switch(const game_board& board, const coord& curs)
 {
   // JCD TODO
+}
+
+void banner(const std::string& text, const int banner_colour, const settings& set)
+{
+  std::ostringstream ss;
+
+  ss << std::setw(text.size()) << " ";
+  std::string blank = ss.str();
+  std::vector<std::string> prompt_text = {blank, text, blank};
+  
+  int row = set.term_size.first / 2 - 1;
+  set_colour(banner_colour);
+
+  for (const auto& line : prompt_text)
+  {
+    int col = get_center_x(line);
+    mvprintw(row, col, line.c_str());
+
+    row++;
+  }
+  
+  disable_colour(set.quit_prompt_colour);
+  refresh();
+}
+
+bool display_quit_prompt(const settings& set)
+{
+  bool keep_playing = false;
+  banner(set.quit_prompt, set.quit_prompt_colour, set);
+  
+  int prompt_val = getch();
+  keep_playing = !(prompt_val == 'y' || prompt_val == 'Y');
+  
+  return keep_playing;
 }
 
 // Center the text at the given row.

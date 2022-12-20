@@ -5,6 +5,8 @@
 #include <ncurses.h>
 #include "state.hpp"
 
+const int EMPTY_BOARD_VAL = -1;
+
 // Create a new game state, shuffling it until it's not in a winner state.
 state create_new_game()
 {
@@ -15,7 +17,7 @@ state create_new_game()
   std::shuffle(vals.begin(), vals.end(), g);
   s.curs = std::make_pair(0, 0);
   
-  std::vector<std::vector<int>> new_board(4, std::vector<int>(4));
+  game_board new_board(4, std::vector<int>(4));
   new_board = assign(vals);
   
   while (is_winner(new_board))
@@ -33,7 +35,7 @@ state create_new_game()
 // Check to see if the board is a winner. It needs to be height * width
 // (16) and needs to have values in ascending order, ignoring -1, which
 // is used to represent the empty square.
-bool is_winner(const std::vector<std::vector<int>>& board)
+bool is_winner(const game_board& board)
 {
   int cnt = 0;
   int lowest = -2;
@@ -45,7 +47,7 @@ bool is_winner(const std::vector<std::vector<int>>& board)
       int val = board[i][j];
       cnt++;
 
-      if (val == -1)
+      if (empty_val(val))
       {
 	continue;
       }
@@ -67,9 +69,9 @@ bool is_winner(const std::vector<std::vector<int>>& board)
 }
 
 // Create a 4x4 board using a flat vector of values.
-std::vector<std::vector<int>> assign(const std::vector<int>& vals)
+game_board assign(const std::vector<int>& vals)
 {
-  std::vector<std::vector<int>> board(4, std::vector<int>(4));
+  game_board board(4, std::vector<int>(4));
 
   if (vals.size() == BOARD_HEIGHT * BOARD_WIDTH)
   {
@@ -86,14 +88,14 @@ std::vector<std::vector<int>> assign(const std::vector<int>& vals)
 }
 
 // Dump the board
-void board_err(const std::vector<std::vector<int>>& board)
+void board_err(const game_board& board)
 {
   std::cerr << board_str(board) << std::endl;
 }
 
 // Create a string representation of the board that can be eg dumped to
 // stderr.
-std::string board_str(const std::vector<std::vector<int>>& board)
+std::string board_str(const game_board& board)
 {
   std::ostringstream ss;
 
@@ -109,9 +111,9 @@ std::string board_str(const std::vector<std::vector<int>>& board)
 }
 
 // Figure out where the initial cursor should go.
-std::pair<int, int> find_initial_curs(const std::vector<std::vector<int>>& board)
+coord find_initial_curs(const game_board& board)
 {
-  std::pair<int, int> curs = std::make_pair(0, 0);
+  coord curs = std::make_pair(0, 0);
 
   for (size_t i = 0; i < board.size(); i++)
   {
@@ -121,7 +123,7 @@ std::pair<int, int> find_initial_curs(const std::vector<std::vector<int>>& board
     {
       int val = row.at(j);
 
-      if (val == -1)
+      if (empty_val(val))
       {
 	if (j == 0)
 	{
@@ -143,9 +145,9 @@ std::vector<int> get_curs_inputs()
   return  {'w', 'W', 'a', 'A', 's', 'S', 'd', 'D', KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT};
 }
 
-std::pair<int, int> get_next_curs(const std::pair<int, int>& curs, const int key)
+coord get_next_curs(const coord& curs, const int key)
 {
-  std::pair<int, int> next_curs = curs;
+  coord next_curs = curs;
 
   if (key == 'w' || key == 'W' || key == KEY_UP)
   {
@@ -177,9 +179,9 @@ std::pair<int, int> get_next_curs(const std::pair<int, int>& curs, const int key
   }
 }
 
-std::vector<std::pair<int, int>> get_all_adjacent(const std::vector<std::vector<int>>&, const std::pair<int, int>& curs)
+std::vector<coord> get_all_adjacent(const game_board&, const coord& curs)
 {
-  std::vector<std::pair<int, int>> adj;
+  std::vector<coord> adj;
 
   // N
   if (curs.first > 0)
@@ -210,40 +212,58 @@ std::vector<std::pair<int, int>> get_all_adjacent(const std::vector<std::vector<
 
 bool empty_val(const int val)
 {
-  return val == -1;
+  return val == EMPTY_BOARD_VAL;
 }
 
-bool empty(const std::vector<std::vector<int>>& board, const std::pair<int, int>& coord)
+bool illegal_position(const coord& pos)
 {
-  bool e = false;
-
-  try
-  {
-    std::vector<int> row = board.at(coord.first);
-    int val = row.at(coord.second);
-
-    return empty_val(val);
-  }
-  catch(...)
-  {
-  }
-
-  return e;
+  return (pos.first < 0 || pos.first >= BOARD_HEIGHT || pos.second < 0 || pos.second >= BOARD_WIDTH);
 }
 
-std::pair<int, int> get_empty_adjacent(const std::vector<std::vector<int>>& board, const std::pair<int, int>& pos)
+shift_list get_shift_list(const game_board& board, const coord& pos)
 {
-  std::pair<int, int> adj = {-1, -1};
-  auto adj_maybe = get_all_adjacent(board, pos);
+  std::vector<std::pair<int, int>> offsets = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
-  for (const auto& maybe : adj_maybe)
+  // Can't shift on the empty tile.
+  int val = board[pos.first][pos.second];
+
+  if (empty_val(val))
   {
-    if (empty(board, maybe))
-    {
-      return maybe;
-    }
+    return {};
   }
   
-  return adj;
+  for (const auto& off_pair : offsets)
+  {
+    shift_list shifts;
+    coord prev = pos;
+    bool done = false;
+
+    while (!done)
+    {
+      coord cur = prev;
+      
+      cur.first += off_pair.first;
+      cur.second += off_pair.second;
+
+      if (illegal_position(cur))
+      {
+	done = true;
+      }
+
+      int shift_val = board[prev.first][prev.second];
+      shifts.push_back(std::make_pair(cur, shift_val));
+
+      // When we're done, move the "space" back to the start.
+      if (empty_val(shift_val))
+      {
+	shifts.push_back(std::make_pair(pos, EMPTY_BOARD_VAL));
+	return shifts;
+      }
+
+      prev = cur;
+    }
+  }
+
+  return {};
 }
 

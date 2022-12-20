@@ -17,7 +17,9 @@ void display_border(const int row, const settings& set);
 void display_header(const settings& set);
 void display_puzzle(const settings& set, const state& st);
 void display_footer(const settings& set);
-void display_invalid_switch(const std::vector<std::vector<int>>& board, const std::pair<int, int>& curs);
+void display_invalid_switch(const game_board& board, const coord& curs);
+void banner(const std::string& text, const int colour, const settings& set);
+bool display_quit_prompt(const settings& set);
 
 // Text helper functions
 void center(const std::string& text, const int row, const int colour);

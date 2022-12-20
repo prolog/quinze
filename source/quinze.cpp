@@ -12,14 +12,19 @@ void print_build_details(const settings& s)
   std::cout << std::endl << std::endl;
 }
 
-void switch_tiles(state& st)
+void slide_tiles(state& st)
 {
-  auto adj = get_empty_adjacent(st.board, st.curs);
+  shift_list shifts = get_shift_list(st.board, st.curs);
   
-  if (empty(st.board, adj))
+  if (!shifts.empty())
   {
-    std::swap(st.board[st.curs.first][st.curs.second], st.board[adj.first][adj.second]);
-    st.curs = adj;
+    for (const auto& sh_p : shifts)
+    {
+      coord p = sh_p.first;
+      st.board[p.first][p.second] = sh_p.second;
+    }
+
+    st.curs = shifts.at(shifts.size()-1).first;
   }
   else
   {
@@ -44,13 +49,13 @@ void process_movement_input(state& st, const int input)
   }
 }
 
-void process_input(state& st, bool& keep_playing)
+void process_input(const settings& set, state& st, bool& keep_playing)
 {
   int input = getch();
 
   if (input == 'q' || input == 'Q')
   {
-    keep_playing = false;
+    keep_playing = display_quit_prompt(set);
   }
   else if (is_movement(input))
   {
@@ -58,7 +63,7 @@ void process_input(state& st, bool& keep_playing)
   }
   else
   {
-    switch_tiles(st);
+    slide_tiles(st);
   }
 }
 
@@ -76,7 +81,7 @@ void quinze_loop(settings& set, state& st)
     display_footer(set);
     refresh_display();
     
-    process_input(st, keep_playing);
+    process_input(set, st, keep_playing);
   }  
 }
 

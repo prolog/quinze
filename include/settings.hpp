@@ -25,6 +25,8 @@ struct settings
   const std::string author = "Julian Day <jcd748@mail.usask.ca>";
   const int copyright_year = 2022;
   std::pair<int, int> term_size = std::make_pair(0, 0);
+  const std::string quit_prompt = "Really quit? (y/n)";
+  const int quit_prompt_colour = COLOUR_BOLD_WHITE;
   
   // Game header
   const std::string header = "Q u i n z E";

@@ -17,6 +17,7 @@ using shift_list = std::vector<std::pair<coord, int>>;
 struct state
 {
   int turn = 0;
+  bool winner = false;
   coord curs;
   game_board board = {{-1, 1, 2, 3}, {4, 5, 6, 7}, {8, 9, 10, 11}, {12, 13, 14, 15}};
 };

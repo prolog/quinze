@@ -27,9 +27,12 @@ struct settings
   std::pair<int, int> term_size = std::make_pair(0, 0);
   const std::string quit_prompt = "Really quit? (y/n)";
   const int quit_prompt_colour = COLOUR_BOLD_WHITE;
+  std::string farewell = "Thanks for playing!";
+  std::string farewell_winner = "Thanks for winning!";
   
   // Game header
   const std::string header = "Q u i n z E";
+  const std::string header_winner = "Q u i n z E - Winner!";
   const int header_colour = COLOUR_BOLD_WHITE;
 
   // Border details
@@ -45,6 +48,7 @@ struct settings
   
   // Game footer
   const std::string footer = "q quits, arrows/wasd move, and all others switch";
+  const std::string footer_winner = "q quits!";  
   const int footer_colour = COLOUR_BOLD_WHITE;
 };
 

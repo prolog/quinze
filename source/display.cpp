@@ -60,29 +60,34 @@ void display_border(const int row, const settings& set)
   
   for (int i = 1; i <= BOARD_WIDTH; i++)
   {
-    set_colour(set.border_connector_colour);
+    int bc_colour = set.border_connector_colour;
+
+    set_colour(bc_colour);
     mvprintw(row, col, set.border_connector.c_str());
-    disable_colour(set.border_connector_colour);
+    disable_colour(bc_colour);
     col++;
 
-    set_colour(set.border_edge_span_colour);
+    int be_colour = set.border_edge_span_colour;
+
+    set_colour(be_colour);
     mvprintw(row, col, set.border_edge_span.c_str());
-    disable_colour(set.border_edge_span_colour);
+    disable_colour(be_colour);
     col += 2;
     
     if (i == BOARD_WIDTH)
     {
-      set_colour(set.border_connector_colour);
+      set_colour(bc_colour);
       mvprintw(row, col, set.border_connector.c_str());
-      disable_colour(set.border_connector_colour);
+      disable_colour(bc_colour);
     }
   }
 }
 
 // Show the Quinze header
-void display_header(const settings& set)
+void display_header(const settings& set, const state& st)
 {
-  center(set.header, 0, set.header_colour);
+  std::string text = st.winner ? set.header_winner : set.header;
+  center(text, 0, set.header_colour);
 }
 
 // Display the current state of the puzzle
@@ -105,9 +110,11 @@ void display_puzzle(const settings& set, const state& st)
     
     for (size_t j = 0; j < row_v.size(); j++)
     {
-      set_colour(set.border_row_span_colour);
+      int span_colour = set.border_row_span_colour;
+      
+      set_colour(span_colour);
       mvprintw(row, col, set.border_row_span.c_str());
-      disable_colour(set.border_row_span_colour);
+      disable_colour(span_colour);
       
       getyx(stdscr, row, col);
 
@@ -115,7 +122,9 @@ void display_puzzle(const settings& set, const state& st)
       bool reverse = (curs == cur);
       int ival = row_v.at(j);
       std::string val = std::to_string(ival);
-      set_colour(set.tile_colour, reverse);
+
+      int tile_colour = set.tile_colour;
+      set_colour(tile_colour, reverse);
             
       if (empty_val(ival))
       {
@@ -127,14 +136,14 @@ void display_puzzle(const settings& set, const state& st)
       }
 
       mvprintw(row, col, val.c_str());
-      disable_colour(set.tile_colour, reverse);
+      disable_colour(tile_colour, reverse);
       getyx(stdscr, row, col);
       
       if (j == row_v.size() - 1)
       {
-	set_colour(set.border_row_span_colour);
+	set_colour(span_colour);
 	mvprintw(row, col, set.border_row_span.c_str());
-	disable_colour(set.border_row_span_colour);
+	disable_colour(span_colour);
 	
 	getyx(stdscr, row, col);
       }
@@ -148,15 +157,10 @@ void display_puzzle(const settings& set, const state& st)
 }
 
 // Display the info footer.
-void display_footer(const settings& set)
+void display_footer(const settings& set, const state& st)
 {
-  center(set.footer, set.term_size.first-1, set.footer_colour);
-}
-
-// Flash the current tile to indicate an invalid switch
-void display_invalid_switch(const game_board& board, const coord& curs)
-{
-  // JCD TODO
+  std::string text = st.winner ? set.footer_winner : set.footer;
+  center(text, set.term_size.first-1, set.footer_colour);
 }
 
 void banner(const std::string& text, const int banner_colour, const settings& set)
@@ -259,3 +263,5 @@ void disable_colour(const int selected_colour, const bool reverse)
 
   wattroff(stdscr, COLOR_PAIR(selected_colour+1));
 }
+
+

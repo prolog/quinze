@@ -14,10 +14,9 @@ void refresh_display();
 
 // Show the parts of the game screen
 void display_border(const int row, const settings& set);
-void display_header(const settings& set);
+void display_header(const settings& set, const state& st);
 void display_puzzle(const settings& set, const state& st);
-void display_footer(const settings& set);
-void display_invalid_switch(const game_board& board, const coord& curs);
+void display_footer(const settings& set, const state& st);
 void banner(const std::string& text, const int colour, const settings& set);
 bool display_quit_prompt(const settings& set);
 

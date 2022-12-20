@@ -26,9 +26,13 @@ void slide_tiles(state& st)
 
     st.curs = shifts.at(shifts.size()-1).first;
   }
-  else
+}
+
+void check_winner(state& st)
+{
+  if (is_winner(st.board))
   {
-    display_invalid_switch(st.board, st.curs);
+    st.winner = true;
   }
 }
 
@@ -42,7 +46,7 @@ bool is_movement(const int input)
 void process_movement_input(state& st, const int input)
 {
   auto curs = get_next_curs(st.curs, input);
-
+  
   if (curs != st.curs)
   {
     st.curs = curs;
@@ -55,13 +59,13 @@ void process_input(const settings& set, state& st, bool& keep_playing)
 
   if (input == 'q' || input == 'Q')
   {
-    keep_playing = display_quit_prompt(set);
+    keep_playing = st.winner ? false : display_quit_prompt(set);
   }
-  else if (is_movement(input))
+  else if (is_movement(input) && !st.winner)
   {
     process_movement_input(st, input);
   }
-  else
+  else if (!st.winner)
   {
     slide_tiles(st);
   }
@@ -76,18 +80,20 @@ void quinze_loop(settings& set, state& st)
     refresh_settings(set);
 
     clear_display();
-    display_header(set);
+    display_header(set, st);
     display_puzzle(set, st);
-    display_footer(set);
+    display_footer(set, st);
     refresh_display();
     
     process_input(set, st, keep_playing);
+    check_winner(st);
   }  
 }
 
-void farewell()
+void farewell(const settings& set, const state& st)
 {
-  std::cout << "Thanks for playing!" << std::endl;
+  std::string message = st.winner ? set.farewell_winner : set.farewell;
+  std::cout << message  << std::endl;
 }
 
 void quinze()
@@ -99,7 +105,7 @@ void quinze()
   display_setup();
   quinze_loop(set, st);
   display_teardown();
-  farewell();
+  farewell(set, st);
 }
 
 int main()

@@ -17,7 +17,7 @@ state create_new_game()
   // To easily test the victory condition, comment out the std::shuffle
   // below.
   std::vector<int> vals = {1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 10, 11, 12, -1, 14, 15};
-  //std::shuffle(vals.begin(), vals.end(), g);
+  std::shuffle(vals.begin(), vals.end(), g);
   s.curs = std::make_pair(0, 0);
   
   game_board new_board(4, std::vector<int>(4));

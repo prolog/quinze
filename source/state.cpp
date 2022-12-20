@@ -236,28 +236,30 @@ shift_list get_shift_list(const game_board& board, const coord& pos)
   {
     shift_list shifts;
     coord prev = pos;
-    bool done = false;
 
-    while (!done)
+    while (true)
     {
       coord cur = prev;
       
       cur.first += off_pair.first;
-      cur.second += off_pair.second;
+      cur.second += off_pair.second;      
 
       if (illegal_position(cur))
       {
-	done = true;
+	break;
       }
-
-      int shift_val = board[prev.first][prev.second];
-      shifts.push_back(std::make_pair(cur, shift_val));
-
-      // When we're done, move the "space" back to the start.
-      if (empty_val(shift_val))
+      else
       {
-	shifts.push_back(std::make_pair(pos, EMPTY_BOARD_VAL));
-	return shifts;
+	int shift_val = board[prev.first][prev.second];
+	shifts.push_back(std::make_pair(cur, shift_val));
+
+	int cur_val = board[cur.first][cur.second];
+
+	if (empty_val(cur_val))
+	{
+	  shifts.push_back(std::make_pair(pos, EMPTY_BOARD_VAL));
+	  return shifts;
+	}
       }
 
       prev = cur;

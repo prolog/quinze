@@ -22,6 +22,7 @@ struct state
   game_board board = {{-1, 1, 2, 3}, {4, 5, 6, 7}, {8, 9, 10, 11}, {12, 13, 14, 15}};
 };
 
+game_board create_starting_board(const game_board& solved_board, const coord& empty_tile);
 state create_new_game();
 bool is_winner(const game_board& board);
 game_board assign(const std::vector<int>& vals);
@@ -34,5 +35,4 @@ std::vector<coord> get_all_adjacent(const game_board& board, const coord& curs);
 bool empty_val(const int val);
 bool illegal_position(const coord& pos);
 shift_list get_shift_list(const game_board& board, const coord& pos);
-
 

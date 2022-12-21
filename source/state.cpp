@@ -6,29 +6,59 @@
 #include "state.hpp"
 
 const int EMPTY_BOARD_VAL = -1;
+std::random_device rd;
+std::mt19937 g(rd());
 
-// Create a new game state, shuffling it until it's not in a winner state.
+game_board create_starting_board(const game_board& solved, const coord& blank_pos)
+{
+  game_board board = solved;
+  coord curs = blank_pos;
+  coord last = {-1, -1};
+  
+  for (int i = 0; i < 250; i++)
+  {
+    std::vector<std::pair<int, int>> offsets = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+    std::shuffle(offsets.begin(), offsets.end(), g);
+
+    for (const auto& offset : offsets)
+    {
+      coord new_pos = {curs.first + offset.first, curs.second + offset.second};
+
+      // Don't pick this position if it's illegal (obviously) or if it's
+      // the cursor's previous position. This allows for better randomization
+      // (no swapping back and forth).
+      if (illegal_position(new_pos) || last == new_pos)
+      {
+	continue;
+      }
+      else
+      {
+	std::swap(board[curs.first][curs.second], board[new_pos.first][new_pos.second]);
+	curs = new_pos;
+	last = curs;
+	
+	break;
+      }
+    }
+  }
+  
+  return board;
+}
+
+// Create a new game state, sliding tiles from a victory state to ensure that
+// every puzzle is solvable.
 state create_new_game()
 {
   state s;
-  std::random_device rd;
-  std::mt19937 g(rd());
 
-  // To easily test the victory condition, comment out the std::shuffle
-  // below.
-  std::vector<int> vals = {1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 10, 11, 12, -1, 14, 15};
-  std::shuffle(vals.begin(), vals.end(), g);
+  std::vector<int> vals = {1, 2, 3, 4, 5, 6,  7, 8, 9, 10, 11, 12, 13, 14, 15, -1};
   s.curs = std::make_pair(0, 0);
   
   game_board new_board(4, std::vector<int>(4));
   new_board = assign(vals);
-  
-  while (is_winner(new_board))
-  {
-    std::shuffle(vals.begin(), vals.end(), g);
-    new_board = assign(vals);
-  }
 
+  new_board = create_starting_board(new_board, {3, 3});
+  
   s.board = new_board;
   s.curs = find_initial_curs(s.board);
   

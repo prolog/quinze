@@ -14,7 +14,6 @@ const int DISPLAY_BOARD_WIDTH = (3 * BOARD_WIDTH) + 1;
 void display_setup()
 {
   initscr();
-  start_color();
   init_colours();
   keypad(stdscr, true);
   curs_set(0);
@@ -38,18 +37,23 @@ void refresh_display()
 
 void init_colours()
 {
-  std::vector<short int> colours{COLOR_BLACK, COLOR_RED, COLOR_GREEN, COLOR_YELLOW, COLOR_BLUE, COLOR_MAGENTA, COLOR_CYAN, COLOR_WHITE};
-
-  short int pair_counter = 1;
-  for (auto bg_colour : colours)
+  if (can_change_color())
   {
-    for (auto fg_colour : colours)
-    {
-      init_pair(pair_counter, fg_colour, bg_colour);
-      pair_counter++;
-    }
+    start_color();
+    
+    std::vector<short int> colours{COLOR_BLACK, COLOR_RED, COLOR_GREEN, COLOR_YELLOW, COLOR_BLUE, COLOR_MAGENTA, COLOR_CYAN, COLOR_WHITE};
 
-    pair_counter += CURSES_NUM_BASE_COLOURS;
+    short int pair_counter = 1;
+    for (auto bg_colour : colours)
+    {
+      for (auto fg_colour : colours)
+      {
+	init_pair(pair_counter, fg_colour, bg_colour);
+	pair_counter++;
+      }
+      
+      pair_counter += CURSES_NUM_BASE_COLOURS;
+    }
   }
 }
 
@@ -228,40 +232,46 @@ std::pair<int, int> get_term_size()
 // Set or disable the desired colour on the given window.
 void set_colour(const int selected_colour, const bool reverse)
 {
-  if (reverse)
+  if (can_change_color())
   {
-    wattron(stdscr, A_REVERSE);
+    if (reverse)
+    {
+      wattron(stdscr, A_REVERSE);
+    }
+    
+    if ((selected_colour % CURSES_NUM_TOTAL_COLOURS) > COLOUR_WHITE)
+    {
+      int actual_colour = selected_colour - COLOUR_BOLD_BLACK;
+      wattron(stdscr, COLOR_PAIR(actual_colour + 1));
+      wattron(stdscr, A_BOLD);
+      
+      return;
+    }
+    
+    wattron(stdscr, COLOR_PAIR(selected_colour + 1));
   }
-  
-  if ((selected_colour % CURSES_NUM_TOTAL_COLOURS) > COLOUR_WHITE)
-  {
-    int actual_colour = selected_colour - COLOUR_BOLD_BLACK;
-    wattron(stdscr, COLOR_PAIR(actual_colour + 1));
-    wattron(stdscr, A_BOLD);
-
-    return;
-  }
-
-  wattron(stdscr, COLOR_PAIR(selected_colour + 1));
 }
 
 void disable_colour(const int selected_colour, const bool reverse)
 {
-  if (reverse)
+  if (can_change_color())
   {
-    wattroff(stdscr, A_REVERSE);
-  }
-  
-  if ((selected_colour % CURSES_NUM_TOTAL_COLOURS) > COLOUR_WHITE)
-  {
-    int actual_colour = selected_colour - COLOUR_BOLD_BLACK;
-    wattroff(stdscr, COLOR_PAIR(actual_colour+1));
-    wattroff(stdscr, A_BOLD);
+    if (reverse)
+    {
+      wattroff(stdscr, A_REVERSE);
+    }
+    
+    if ((selected_colour % CURSES_NUM_TOTAL_COLOURS) > COLOUR_WHITE)
+    {
+      int actual_colour = selected_colour - COLOUR_BOLD_BLACK;
+      wattroff(stdscr, COLOR_PAIR(actual_colour+1));
+      wattroff(stdscr, A_BOLD);
+      
+      return;
+    }
 
-    return;
+    wattroff(stdscr, COLOR_PAIR(selected_colour+1));
   }
-
-  wattroff(stdscr, COLOR_PAIR(selected_colour+1));
 }
 
 

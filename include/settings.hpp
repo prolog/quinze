@@ -21,7 +21,7 @@ constexpr int COLOUR_BOLD_WHITE = 15;
 struct settings
 {
   // Misc
-  const std::string version = "0.1";
+  const std::string version = "0.11";
   const std::string author = "Julian Day <jcd748@mail.usask.ca>";
   const int copyright_year = 2022;
   std::pair<int, int> term_size = std::make_pair(0, 0);

@@ -11,9 +11,35 @@ quinze's only dependencies are ncurses (which most Linux distros will have) and 
 
 ## Building
 
+You have a couple of choices: quinze supports both premake and cmake.
+
+premake:
+
 ```
 $ premake4 gmake
 $ make config=release
+```
+
+cmake:
+
+```
+$ cmake --build .
+```
+
+# Installation
+
+If you are building using cmake, there is installation support. By default, CMakeLists.txt specifies the install dir as /usr/local/bin. With the appropriate privileges, run:
+
+```
+$ cmake --build .
+$ cmake --install .
+```
+
+If you are using an older version of cmake that doesn't support the --install flag, and assuming you have installation privileges:
+
+```
+$ cmake .
+$ make && make install
 ```
 
 # Configuration

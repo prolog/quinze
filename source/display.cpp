@@ -67,21 +67,21 @@ void display_border(const int row, const settings& set)
     int bc_colour = set.border_connector_colour;
 
     set_colour(bc_colour);
-    mvprintw(row, col, set.border_connector.c_str());
+    mvprintw(row, col, "%s", set.border_connector.c_str());
     disable_colour(bc_colour);
     col++;
 
     int be_colour = set.border_edge_span_colour;
 
     set_colour(be_colour);
-    mvprintw(row, col, set.border_edge_span.c_str());
+    mvprintw(row, col, "%s", set.border_edge_span.c_str());
     disable_colour(be_colour);
     col += 2;
     
     if (i == BOARD_WIDTH)
     {
       set_colour(bc_colour);
-      mvprintw(row, col, set.border_connector.c_str());
+      mvprintw(row, col, "%s", set.border_connector.c_str());
       disable_colour(bc_colour);
     }
   }
@@ -117,7 +117,7 @@ void display_puzzle(const settings& set, const state& st)
       int span_colour = set.border_row_span_colour;
       
       set_colour(span_colour);
-      mvprintw(row, col, set.border_row_span.c_str());
+      mvprintw(row, col, "%s", set.border_row_span.c_str());
       disable_colour(span_colour);
       
       getyx(stdscr, row, col);
@@ -139,14 +139,14 @@ void display_puzzle(const settings& set, const state& st)
 	val += " ";
       }
 
-      mvprintw(row, col, val.c_str());
+      mvprintw(row, col, "%s", val.c_str());
       disable_colour(tile_colour, reverse);
       getyx(stdscr, row, col);
       
       if (j == row_v.size() - 1)
       {
 	set_colour(span_colour);
-	mvprintw(row, col, set.border_row_span.c_str());
+	mvprintw(row, col, "%s", set.border_row_span.c_str());
 	disable_colour(span_colour);
 	
 	getyx(stdscr, row, col);
@@ -181,7 +181,7 @@ void banner(const std::string& text, const int banner_colour, const settings& se
   for (const auto& line : prompt_text)
   {
     int col = get_center_x(line);
-    mvprintw(row, col, line.c_str());
+    mvprintw(row, col, "%s", line.c_str());
 
     row++;
   }
@@ -207,7 +207,7 @@ void center(const std::string& text, const int row, const int colour)
   int x = get_center_x(text);
 
   set_colour(colour);
-  mvprintw(row, x, text.c_str());
+  mvprintw(row, x, "%s", text.c_str());
   disable_colour(colour);
 }
 

@@ -6,7 +6,14 @@ solution "quize"
 project "quinze"
   kind "ConsoleApp"
   language "C++"
-  files { "**.hpp", "**.cpp" }
+  files { "include/display.hpp", 
+          "include/quinze.hpp",
+	  "include/settings.hpp",
+	  "include/state.hpp",
+	  "source/display.cpp",
+	  "source/quinze.cpp",
+	  "source/settings.cpp",
+	  "source/state.cpp" }
 
   includedirs { "include" }
   links { "ncurses" }

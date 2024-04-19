@@ -21,9 +21,9 @@ constexpr int COLOUR_BOLD_WHITE = 15;
 struct settings
 {
   // Misc
-  const std::string version = "0.12";
+  const std::string version = "0.13";
   const std::string author = "Julian Day <jcd748@mail.usask.ca>";
-  const int copyright_year = 2023;
+  const int copyright_year = 2024;
   std::pair<int, int> term_size = std::make_pair(0, 0);
   const std::string quit_prompt = "Really quit? (y/n)";
   const int quit_prompt_colour = COLOUR_BOLD_WHITE;
